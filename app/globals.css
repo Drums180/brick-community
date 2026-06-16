@@ -1,19 +1,98 @@
 @import "tailwindcss";
 
+/* ── Brand palette ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --cream-50:     #fdfaf7;
+  --cream-100:    #f6ede7;
+  --cream-200:    #ece0d6;
+  --cream-300:    #ddcabb;
+
+  --midnight-600: #0f2a4f;
+  --midnight-500: #133460;
+  --midnight-400: #2b4d7d;
+  --midnight-300: #6f87a8;
+
+  --brick-red:    #ad0922;
+  --brick-600:    #8d0a1c;
+  --brick-500:    #ad0922;
+  --brick-400:    #c4253d;
+
+  --brass-300:    #f8e6b3;
+  --brass-500:    #f4d887;
+  --brass-600:    #e6c25c;
+
+  --ink-700:      #242424;
+  --ink-500:      #4a4a4a;
+  --ink-400:      #6e6862;
+
+  --ink-a08:      rgba(36,36,36,0.08);
+  --ink-a12:      rgba(36,36,36,0.12);
+  --midnight-a10: rgba(19,52,96,0.10);
+  --midnight-a06: rgba(19,52,96,0.06);
+
+  /* Semantic */
+  --surface-page:    var(--cream-100);
+  --surface-card:    var(--cream-50);
+  --surface-raised:  #ffffff;
+  --surface-sunken:  var(--cream-200);
+
+  --text-strong:  var(--ink-700);
+  --text-body:    var(--ink-700);
+  --text-muted:   var(--ink-400);
+
+  --border-subtle:  var(--cream-300);
+  --border-ondark:  rgba(246,237,231,0.18);
+
+  --status-success: #2f7d5b;
+  --focus-ring:     rgba(19,52,96,0.45);
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(36,36,36,0.06);
+  --shadow-sm: 0 1px 3px rgba(36,36,36,0.08), 0 1px 2px rgba(36,36,36,0.04);
+  --shadow-md: 0 4px 12px rgba(19,52,96,0.08), 0 2px 4px rgba(36,36,36,0.05);
+  --shadow-lg: 0 12px 32px rgba(19,52,96,0.12), 0 4px 8px rgba(36,36,36,0.05);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16,1,0.3,1);
+  --ease-std: cubic-bezier(0.2,0,0,1);
+
+  /* Fonts – populated by next/font variables, fallback to system */
+  --font-serif: var(--font-ct, "Crimson Text", Georgia, serif);
+  --font-sans:  var(--font-sg, "Space Grotesk", ui-sans-serif, system-ui, sans-serif);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+*,*::before,*::after { box-sizing: border-box; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background: var(--surface-page);
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+button { font-family: inherit; }
+
+@keyframes scanSweep {
+  0%,100% { top: 9%; }
+  50%      { top: 84%; }
+}
+@keyframes detectIn {
+  0%   { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes floatY {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-7px); }
+}
+@keyframes livePulse {
+  0%   { box-shadow: 0 0 0 0   rgba(173,9,34,0.5); }
+  70%  { box-shadow: 0 0 0 9px rgba(173,9,34,0); }
+  100% { box-shadow: 0 0 0 0   rgba(173,9,34,0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }
