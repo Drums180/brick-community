@@ -420,9 +420,13 @@ export default function Home() {
       <nav style={{ position: "sticky", top: 0, zIndex: 60, background: "rgba(246,237,231,0.86)", backdropFilter: "blur(10px)", borderBottom: "1px solid var(--border-subtle)" }}>
         <div style={{ maxWidth: 1180, margin: "0 auto", padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Logo />
-          <div style={{ display: "flex", alignItems: "center", gap: 26 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
             <a href="#modos"    style={{ fontSize: 15, fontWeight: 500, color: "var(--ink-500)", textDecoration: "none" }}>Cómo funciona</a>
             <a href="#wishlist" style={{ fontSize: 15, fontWeight: 500, color: "var(--ink-500)", textDecoration: "none" }}>Lista de deseos</a>
+            <a href="/explorar" style={{ fontSize: 15, fontWeight: 500, color: "var(--midnight-500)", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
+              Ver el marketplace
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
             <Btn variant="primary" size="sm" onClick={() => jump("encuesta")}>Responder encuesta</Btn>
           </div>
         </div>
