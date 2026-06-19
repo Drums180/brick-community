@@ -2,7 +2,9 @@
 
 import { useState, useRef } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { AppNav } from '../../components/app-nav'
+import { createClient } from '@/lib/supabase/client'
 
 // ─── Shared icons ─────────────────────────────────────────────────────────────
 
@@ -108,6 +110,7 @@ const CITIES = ['Guadalajara', 'Ciudad de México', 'Monterrey', 'Puebla', 'Quer
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function VenderPage() {
+  const router = useRouter()
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
   const [scanning, setScanning] = useState(false)
   const [condition, setCondition] = useState('')
@@ -116,8 +119,10 @@ export default function VenderPage() {
   const [priceNeg, setPriceNeg] = useState(false)
   const [city, setCity] = useState('')
   const [description, setDescription] = useState('')
-  const [detectedTitle] = useState('LEGO City Comisaría de Policía 60316')
+  const [detectedTitle, setDetectedTitle] = useState('LEGO City Comisaría de Policía 60316')
   const [detectedConfidence] = useState(94)
+  const [publishedId, setPublishedId] = useState<string | null>(null)
+  const [publishError, setPublishError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
 
   const canPublish = condition && type && city && (type === 'intercambio' || price)
@@ -127,7 +132,40 @@ export default function VenderPage() {
     setTimeout(() => { setScanning(false); setStep(2) }, 2600)
   }
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
+    setPublishError('')
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      router.push('/auth/sign-in?next=/vender')
+      return
+    }
+
+    const payload = {
+      seller_id: user.id,
+      title: detectedTitle,
+      description,
+      price: type === 'intercambio' ? null : Number(price),
+      price_negotiable: priceNeg,
+      condition,
+      type,
+      category: 'sets' as const,
+      theme: 'City',
+      city,
+      lego_set_number: '60316',
+      images: [] as string[],
+      status: 'activo' as const,
+    }
+
+    const { data, error } = await supabase.from('listings').insert(payload).select('id').single()
+
+    if (error) {
+      setPublishError('Hubo un error al publicar. Inténtalo de nuevo.')
+      return
+    }
+
+    setPublishedId(data.id)
     setStep(4)
   }
 
@@ -385,6 +423,11 @@ export default function VenderPage() {
                 Completa los campos obligatorios (*) para continuar
               </p>
             )}
+            {publishError && (
+              <p style={{ fontSize: 13, color: 'var(--brick-500)', background: 'rgba(173,9,34,0.08)', borderRadius: 8, padding: '10px 14px', marginTop: 10 }}>
+                {publishError}
+              </p>
+            )}
           </div>
         )}
 
@@ -418,10 +461,12 @@ export default function VenderPage() {
             </div>
 
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/listing/l4" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 52, padding: '0 28px', borderRadius: 999, background: 'var(--midnight-500)', color: 'var(--cream-50)', textDecoration: 'none', fontSize: 15, fontWeight: 600, fontFamily: 'var(--font-sans)' }}>
-                Ver mi anuncio
-              </Link>
-              <button onClick={() => { setStep(1); setCondition(''); setType(''); setPrice(''); setCity(''); setDescription(''); setPriceNeg(false) }}
+              {publishedId && (
+                <Link href={`/listing/${publishedId}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 52, padding: '0 28px', borderRadius: 999, background: 'var(--midnight-500)', color: 'var(--cream-50)', textDecoration: 'none', fontSize: 15, fontWeight: 600, fontFamily: 'var(--font-sans)' }}>
+                  Ver mi anuncio
+                </Link>
+              )}
+              <button onClick={() => { setStep(1); setCondition(''); setType(''); setPrice(''); setCity(''); setDescription(''); setPriceNeg(false); setPublishedId(null) }}
                 style={{ height: 52, padding: '0 28px', borderRadius: 999, border: '1.5px solid var(--border-subtle)', background: 'transparent', color: 'var(--text-strong)', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
                 Publicar otro
               </button>
